@@ -45,6 +45,18 @@ helm install opentelemetry-collector open-telemetry/opentelemetry-collector \
  --values ./kubernetes/opentelemetry-collector-values-daemonset.yaml
 ```
 
+7. Install the Opentelemetry Operator:
+
+```
+kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
+```
+
+8. Apply autoinstrumentation to the Meminator app:
+
+```
+kubectl apply --namespace default -f ./kubernetes/otel-autoinstrumentation.yaml
+```
+
 ### Run the app
 
 Make sure you have skaffold installed. If not, install it from [here](https://skaffold.dev/docs/install/).

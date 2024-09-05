@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service.name: image-picker
+  name: image-picker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service.name: image-picker
+
+  template:
+    metadata:
+      labels:
+        academy-instrumentation-python-default: "true"
+        service.name: image-picker
+    spec:
+      containers:
+        - env:
+            - name: OTEL_SERVICE_NAME
+              value: image-picker-python
+          image: services/image-picker-python:latest
+          name: image-picker
+          ports:
+            - containerPort: 10116
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

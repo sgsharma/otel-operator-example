@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service.name: phrase-picker
+  name: phrase-picker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service.name: phrase-picker
+
+  template:
+    metadata:
+      labels:
+        academy-instrumentation-python-default: "true"
+        service.name: phrase-picker
+    spec:
+      containers:
+        - env:
+            - name: OTEL_SERVICE_NAME
+              value: phrase-picker-python
+          image: services/phrase-picker-python:latest
+          name: phrase-picker
+          ports:
+            - containerPort: 10118
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

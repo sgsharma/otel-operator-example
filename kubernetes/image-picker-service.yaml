@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service.name: image-picker
+  name: image-picker
+spec:
+  ports:
+    - name: "10116"
+      port: 10116
+      targetPort: 10116
+  selector:
+    service.name: image-picker
+status:
+  loadBalancer: {}

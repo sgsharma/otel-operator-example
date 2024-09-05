@@ -1,0 +1,18 @@
+{
+  "name": "@o11yday/web",
+  "version": "0.1.2",
+  "description": "bundle up a static page",
+  "main": "static/index.html",
+  "scripts": {
+    "build": "parcel build static/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  },
+  "dependencies": {
+    "@honeycombio/opentelemetry-web": "^0.1.0",
+    "@opentelemetry/auto-instrumentations-web": "^0.37.0"
+  }
+}

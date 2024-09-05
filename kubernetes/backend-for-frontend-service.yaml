@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service.name: backend-for-frontend
+  name: backend-for-frontend
+spec:
+  ports:
+    - name: "10115"
+      port: 10115
+      targetPort: 10115
+  selector:
+    service.name: backend-for-frontend
+status:
+  loadBalancer: {}

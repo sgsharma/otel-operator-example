@@ -1,0 +1,32 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+build:
+  artifacts:
+  - image: services/backend-for-frontend-python
+    context: services/backend-for-frontend-python
+    docker:
+      dockerfile: Dockerfile
+  - image: services/image-picker-python
+    context: services/image-picker-python
+    docker:
+      dockerfile: Dockerfile
+  - image: services/meminator-python
+    context: services/meminator-python
+    docker:
+      dockerfile: Dockerfile
+  - image: services/phrase-picker-python
+    context: services/phrase-picker-python
+    docker:
+      dockerfile: Dockerfile
+  - image: services/web
+    context: services/web
+    docker:
+      dockerfile: Dockerfile
+  tagPolicy:
+    gitCommit: {}
+  local:
+    useBuildkit: false
+deploy:
+  kubectl:
+    manifests:
+    - ./kubernetes/**.yaml

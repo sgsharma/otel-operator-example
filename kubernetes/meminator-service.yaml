@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service.name: meminator
+  name: meminator
+spec:
+  ports:
+    - name: "10117"
+      port: 10117
+      targetPort: 10117
+  selector:
+    service.name: meminator
+status:
+  loadBalancer: {}

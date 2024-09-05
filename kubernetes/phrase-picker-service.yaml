@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service.name: phrase-picker
+  name: phrase-picker
+spec:
+  ports:
+    - name: "10118"
+      port: 10118
+      targetPort: 10118
+  selector:
+    service.name: phrase-picker
+status:
+  loadBalancer: {}

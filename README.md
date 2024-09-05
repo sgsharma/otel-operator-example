@@ -2,92 +2,75 @@
 
 **_This is a demo app, don't run it in production_**
 
-This contains a sample application for use in Honeycomb Academy lab activities. This app has 4 services.
+This contains a sample application for use in auto-instrumenting with the Opentelemetry Operator. This app has 4 services.
 
 It generates images by combining a randomly chosen picture with a randomly chosen phrase.
 
-## Introduction
-
-Hello! Welcome to the **Instrumenting with Python** course lab.
-
-1. Take a look at this app. The `backend-for-frontend` service needs to be instrumented.
-2. Before you can do that, you need to run this app.
-3. Then, connect this app to Honeycomb.
-4. See what the traces look like.
-5. Improve the traces.
-
 ## Running the application
 
-To run this app, you can use GitPod or Codespaces.
+### Kubernetes Quickstart
 
-Once you run the application, you can send traces to Honeycomb. Then you can practice improving the instrumentation for better observability.
+1. Launch Kubernetes cluster with Docker Desktop:
 
-### GitPod setup
+   - Launch Docker Desktop. Go to Preferences:
+     - choose “Enable Kubernetes”,
+     - set CPUs to at least 3, and Memory to at least 6.0 GiB
+     - on the "Disk" tab, set at least 32 GB disk space
 
-Go to [Gitpod](https://gitpod.io/#https://github.com/honeycombio/academy-instrumentation-python) to launch this project in Gitpod.
+2. Make sure you have the correct context set:
 
-Confirm the workspace creation. You can work in the browser with VS Code Browser or in your local code editor. The default settings are acceptable.
-
-Once you are in the code editor, run `docker compose up` in the code editor's terminal. To stop running the application, run `ctrl+c`. Then run `docker compose down` to remove the container.
-
-### Codespaces setup
-
-Open the repository on GitHub. Open the `<> Code` dropdown down menu.
-
-Select the `Codespaces` tab. Create a codespace on main.
-
-### Local development setup
-
-You also have the option to run this application locally.
-
-First, clone this repository.
-
-```bash
-git clone https://github.com/honeycombio/academy-instrumentation-python.git
+```
+kubectl config use-context docker-desktop
 ```
 
-Install Docker: https://docs.docker.com/get-docker/
+3. Run kubectl get nodes to verify you're connected to the respective control plane.
 
-Create a `.env` file from the example:
+4. If you don't have a Honeycomb API key handy, here is the [documentation](https://docs.honeycomb.io/get-started/configure/environments/manage-api-keys/#create-api-key).
 
-```bash
-cp example.env .env
+5. Add your Honeycomb API key as a secret from the command line. Replace $HONEYCOMB_API_KEY with your actual API key. For example, if your API key is abc123, run the following command:
+
+```
+export HONEYCOMB_API_KEY=abc123
+kubectl create secret generic honeycomb --from-literal=api-key=$HONEYCOMB_API_KEY
 ```
 
-And update the `.env` file with your Honeycomb API key:
+6. Install the OpenTelemetry Collector Helm chart.
 
-```bash
-HONEYCOMB_API_KEY="your-api-key"
-
-# you could change this to your own S3 bucket of images. We accept no responsibility for the outcome.
-# Note: "random-pictures" is an actual S3 bucket name supplied for this course, filled with SFW meme images
-BUCKET_NAME="random-pictures"
-
-OTEL_EXPORTER_OTLP_ENDPOINT="https://api.honeycomb.io:443/"
-OTEL_EXPORTER_OTLP_HEADERS="x-honeycomb-team=${HONEYCOMB_API_KEY}"
-
-# You can set this to "services-implemented-version" to run the answer-guide version
-SERVICE_PATH="services"
 ```
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
-If you don't have an API key handy, here is the [documentation](https://docs.honeycomb.io/get-started/configure/environments/manage-api-keys/#create-api-key).
+helm install opentelemetry-collector open-telemetry/opentelemetry-collector \
+   --set mode=deployment \
+   --set image.repository="otel/opentelemetry-collector-k8s" \
+ --values ./kubernetes/opentelemetry-collector-values-daemonset.yaml
+```
 
 ### Run the app
 
-`./run`
+Make sure you have skaffold installed. If not, install it from [here](https://skaffold.dev/docs/install/).
 
-(This will run `docker compose` in daemon mode, and build containers.)
+Then run:
+
+```
+skaffold run
+```
 
 Access the app:
 
 [http://localhost:10114]()
-
-After making changes to a service, you can tell it to rebuild just that one:
-
-`./run [ meminator | backend-for-frontend | image-picker | phrase-picker ]`
 
 ### Try it out
 
 Visit [http://localhost:10114]()
 
 Click the "GO" button. Then wait.
+
+View your traces in Honeycomb: [https://ui.honeycomb.io/](https://ui.honeycomb.io/)
+
+### Stop the application
+
+To stop the application, run:
+
+```
+skaffold delete
+```

@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       annotations:
-        instrumentation.opentelemetry.io/inject-python: "true"
+        instrumentation.opentelemetry.io/inject-python: "honeycomb/otel-autoinstrumentation"
       labels:
         academy-instrumentation-python-default: "true"
         service.name: backend-for-frontend
@@ -21,6 +21,8 @@ spec:
         - env:
             - name: OTEL_SERVICE_NAME
               value: backend-for-frontend
+            - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
+              value: aws-lambda
           image: services/backend-for-frontend-python:latest
           name: backend-for-frontend
           ports:

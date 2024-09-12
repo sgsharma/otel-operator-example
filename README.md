@@ -34,27 +34,44 @@ export HONEYCOMB_API_KEY=abc123
 kubectl create secret generic honeycomb --from-literal=api-key=$HONEYCOMB_API_KEY
 ```
 
-6. Install the OpenTelemetry Collector Helm chart.
+6. Make sure you have cert-manager installed.
+
+```
+helm install cert-manager jetstack/cert-manager \
+      --namespace default \
+      --create-namespace \
+      --version v1.15.3 \
+      --set crds.enabled=true
+```
+
+7. Install the OpenTelemetry Collector Helm chart.
 
 ```
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
+# optionally run helm repo update
+
 helm install opentelemetry-collector open-telemetry/opentelemetry-collector \
-   --set mode=deployment \
    --set image.repository="otel/opentelemetry-collector-k8s" \
- --values ./kubernetes/opentelemetry-collector-values-daemonset.yaml
+ --values ./opentelemetry-collector-values-daemonset.yaml
 ```
 
-7. Install the Opentelemetry Operator:
+8. Install the Opentelemetry Operator:
 
 ```
-kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
+helm install \
+    --set admissionWebhooks.certManager.enabled=false \
+    --set admissionWebhooks.autoGenerateCert.enabled=true \
+    --set manager.collectorImage.repository="otel/opentelemetry-collector-k8s" \
+    --namespace honeycomb \
+    --create-namespace \
+      opentelemetry-operator open-telemetry/opentelemetry-operator
 ```
 
 8. Apply autoinstrumentation to the Meminator app:
 
 ```
-kubectl apply --namespace default -f ./kubernetes/otel-autoinstrumentation.yaml
+kubectl apply -n honeycomb -f ./otel-autoinstrumentation.yaml
 ```
 
 ### Run the app
